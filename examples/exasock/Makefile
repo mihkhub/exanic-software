@@ -13,5 +13,5 @@ clean:
 tcp-raw-send: tcp-raw-send.c
 	$(CC) $(CFLAGS) $(EXT_CFLAGS) $^ $(LDLIBS) $(EXT_LDLIBS) -o $@
 	
-udp-rr-send: udp-rr-send.c
+udp-rr-send: udp-rr-send.c util.c
 	$(CC) $(CFLAGS) $(EXT_CFLAGS) $^  -o $@
