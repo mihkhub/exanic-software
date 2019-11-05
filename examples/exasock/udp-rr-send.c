@@ -11,6 +11,7 @@
 #include "util.h"
 
 #define TICK_NS (500 * 1000 * 1000)
+#define RR_PORT_FIRST (11753)
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
     int *fds;
     int num_ports, num_packets, samples;
     int num_ports_mask;
-    unsigned int seq = 1;
+    unsigned int sequence = 1;
     timing_t cur_time, deadline_tick, deadline_delta_tick;
     float cpu_ghz;
 
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
     		return EXIT_FAILURE;
     	}
 
-    	rr_addr.sin_port = htons(7532 + i);
+		rr_addr.sin_port = htons(RR_PORT_FIRST + i);
 	    if (bind(send_fd, (struct sockaddr *)&rr_addr, sizeof(rr_addr)) == -1)
 	    {
 	        fprintf(stderr, "bind: %s\n", strerror(errno));
@@ -90,16 +91,15 @@ int main(int argc, char *argv[])
     	timing_start(cur_time);
     	deadline_tick = cur_time + deadline_delta_tick;
     	for(int i = 0; i < num_ports; ++i) {
-    		memcpy(buf, &seq, sizeof(seq));
-    		len = sizeof(seq);
+    		memcpy(buf, &sequence, sizeof(sequence));
+    		len = sizeof(sequence);
     		if (send(fds[cur_fd_index], buf, len, 0) == -1)
     		{
-    			fprintf(stderr, "send: %s, fd=%d\n", strerror(errno), fds[cur_fd_index]);
-    			return EXIT_FAILURE;
+//    			fprintf(stderr, "send: %s, errno=%d, fd=%d\n", strerror(errno), errno,fds[cur_fd_index]);
     		}
     		++cur_fd_index;
     		cur_fd_index &= num_ports_mask;
-    		++seq;
+    		++sequence;
     		++samples;
     	}
 
